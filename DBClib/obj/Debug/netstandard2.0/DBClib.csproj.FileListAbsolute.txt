@@ -1,0 +1,8 @@
+C:\Users\PC\source\repos\DBClib\DBClib\bin\Debug\netstandard2.0\DBClib.deps.json
+C:\Users\PC\source\repos\DBClib\DBClib\bin\Debug\netstandard2.0\DBClib.dll
+C:\Users\PC\source\repos\DBClib\DBClib\bin\Debug\netstandard2.0\DBClib.pdb
+C:\Users\PC\source\repos\DBClib\DBClib\obj\Debug\netstandard2.0\DBClib.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\DBClib\DBClib\obj\Debug\netstandard2.0\DBClib.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\DBClib\DBClib\obj\Debug\netstandard2.0\DBClib.AssemblyInfo.cs
+C:\Users\PC\source\repos\DBClib\DBClib\obj\Debug\netstandard2.0\DBClib.dll
+C:\Users\PC\source\repos\DBClib\DBClib\obj\Debug\netstandard2.0\DBClib.pdb
