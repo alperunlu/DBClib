@@ -79,7 +79,7 @@ namespace DBClib
             return MSGidList;
         }
 
-        public string[] GetMinValue(string file, string signal)
+        public string[] GetMin(string file, string signal)
         {
 
             ClearLists();
@@ -97,7 +97,7 @@ namespace DBClib
         }
 
         
-        public string[] GetMaxValue(string file, string signal)
+        public string[] GetMax(string file, string signal)
         {
 
             ClearLists();
