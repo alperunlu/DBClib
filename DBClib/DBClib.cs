@@ -17,10 +17,7 @@ namespace DBClib
         //Signals
         public string[] GetSignalNames(string file, string message)
         {
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
 
             string[] MSGsignalitems = DbcMessages.Split(new string[] { "SG_ " }, StringSplitOptions.None);
@@ -42,10 +39,7 @@ namespace DBClib
         public string[] GetMessageNames(string file)
         {
 
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
 
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
@@ -67,10 +61,7 @@ namespace DBClib
         public string[] GetMessageIDs(string file)
         {
 
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
 
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
@@ -87,6 +78,49 @@ namespace DBClib
 
             return MSGidList;
         }
+
+        public string[] GetMinValue(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ "+signal }, StringSplitOptions.None);
+
+            for (int i = 1; i < DBCmessageitems.Length; i++)
+            {
+                string DBCMessage = DBCmessageitems[i];
+                string minVal = FindTextBetween(DBCMessage, "[", "|");
+            }
+
+            return minVal;
+        }
+
+        
+        public string[] GetMaxValue(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ "+signal }, StringSplitOptions.None);
+
+            for (int i = 1; i < DBCmessageitems.Length; i++)
+            {
+                string DBCMessage = DBCmessageitems[i];
+                string minVal = FindTextBetween(DBCMessage, "|", "]");
+            }
+
+            return maxVal;
+        }
+
+        public void ClearLists()
+        {
+            DBCmessageList = new string[] { };
+            MSGidList = new string[] { };
+            SIGlist = new string[] { };
+        }
+
 
         public string FindTextBetween(string text, string left, string right)
         {
