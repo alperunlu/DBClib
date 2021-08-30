@@ -79,38 +79,26 @@ namespace DBClib
             return MSGidList;
         }
 
-        public string[] GetMin(string file, string signal)
+        public string GetMin(string file, string signal)
         {
 
             ClearLists();
             DBCload(file);
-
-            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ "+signal }, StringSplitOptions.None);
-
-            for (int i = 1; i < DBCmessageitems.Length; i++)
-            {
-                string DBCMessage = DBCmessageitems[i];
-                string minVal = FindTextBetween(DBCMessage, "[", "|");
-            }
-
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length-1];    
+            string minVal = FindTextBetween(DBCMessage, "[", "|");
             return minVal;
         }
 
-        
-        public string[] GetMax(string file, string signal)
+
+        public string GetMax(string file, string signal)
         {
 
             ClearLists();
             DBCload(file);
-
-            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ "+signal }, StringSplitOptions.None);
-
-            for (int i = 1; i < DBCmessageitems.Length; i++)
-            {
-                string DBCMessage = DBCmessageitems[i];
-                string minVal = FindTextBetween(DBCMessage, "|", "]");
-            }
-
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string maxVal = FindTextBetween(DBCMessage, "[", "|");
             return maxVal;
         }
 
