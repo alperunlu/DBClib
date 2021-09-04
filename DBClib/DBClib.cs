@@ -10,7 +10,12 @@ namespace DBCapi
         public static string minVal = "";
         public static string maxVal = "";
         public static string SIGunit = "";
+        public static string SIGorder = "";
+        public static string SIGfactor = "";
+        public static string SIGoffset = "";
         public static string MSGcycle = "";
+        public static string startBit = "";
+        public static string endBit = "";
         public static string DbcPeriod = "";
         public static string DbcMessages = "";
         public static string DbcCycles = "";
@@ -126,8 +131,65 @@ namespace DBCapi
             DBCload(file);
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
             string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
-            string sigUnit = FindTextBetween(DBCMessage, @"] """, @"""");
-            return sigUnit;
+            string SIGunit = FindTextBetween(DBCMessage, @"] """, @"""");
+            return SIGunit;
+        }
+
+        public string GetFactor(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string SIGfactor = FindTextBetween(DBCMessage, "(", ",");
+            return SIGfactor;
+        }
+
+        public string GetOffset(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string SIGoffset = FindTextBetween(DBCMessage, ",", ")");
+            return SIGoffset;
+        }
+
+        public string GetStartBit(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string startBit = FindTextBetween(DBCMessage, ": ", "|");
+            return startBit;
+        }
+
+        public string GetEndBit(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            startBit = GetStartBit(file, signal);
+            SIGorder = GetBitOrder(file, signal);
+            string endBit = FindTextBetween(DBCMessage, "|", "@");
+
+            if (SIGorder == "Intel")
+            {
+                endBit = (Int32.Parse(startBit) + Int32.Parse(endBit) - 1).ToString();
+            }
+
+            if (SIGorder == "Motorola")
+            {
+                endBit = (Int32.Parse(startBit) - Int32.Parse(endBit) + 1).ToString();
+            }
+
+            return endBit;
         }
 
         public string GetCycleTime(string file, string MSGid)
@@ -139,6 +201,19 @@ namespace DBCapi
             string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
             string MSGcycle = FindTextBetween(DBCMessage, " ", ";");
             return MSGcycle;
+        }
+
+        public string GetBitOrder(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string SIGorder = FindTextBetween(DBCMessage, "@", "-");
+            if (SIGorder == "1") SIGorder = "Intel";
+            if (SIGorder == "0") SIGorder = "Motorola";
+            return SIGorder;
         }
 
         public void ClearLists()
