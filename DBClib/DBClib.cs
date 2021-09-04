@@ -10,8 +10,10 @@ namespace DBCapi
         public static string minVal = "";
         public static string maxVal = "";
         public static string SIGunit = "";
+        public static string MSGcycle = "";
         public static string DbcPeriod = "";
         public static string DbcMessages = "";
+        public static string DbcCycles = "";
         public static string DbcSignals = "";
         private string[] DBCmessageList = new string[] { };
         private string[] MSGidList = new string[] { };
@@ -51,6 +53,7 @@ namespace DBCapi
 
             DBCload(file);
 
+
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
 
             for (int i = 1; i < DBCmessageitems.Length; i++)
@@ -75,14 +78,15 @@ namespace DBCapi
             SIGlist = new string[] { };
 
             DBCload(file);
+            GetMessageNames(file);
 
-            string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_" }, StringSplitOptions.None);
 
             for (int i = 1; i < DBCmessageitems.Length; i++)
             {
                 string DBCMessage = DBCmessageitems[i];
                 string MSGname = FindTextBetween(DBCMessage, " ", ":");
-                string MSGid = DBCMessage.Substring(0, 10);
+                string MSGid = FindTextBetween(DBCMessage, " ", " "); ;
 
                 Array.Resize(ref MSGidList, MSGidList.Length + 1);
                 MSGidList[MSGidList.Length - 1] = MSGid;
@@ -126,6 +130,17 @@ namespace DBCapi
             return sigUnit;
         }
 
+        public string GetCycleTime(string file, string MSGid)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcCycles.Split(new string[] { "BA_ \"GenMsgCycleTime\" BO_ " + MSGid }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string MSGcycle = FindTextBetween(DBCMessage, " ", ";");
+            return MSGcycle;
+        }
+
         public void ClearLists()
         {
             DBCmessageList = new string[] { };
@@ -155,7 +170,8 @@ namespace DBCapi
             {                
                 using (StreamReader sr = new StreamReader(file))
                 {
-                    StringBuilder messages = new StringBuilder();    
+                    StringBuilder messages = new StringBuilder();
+                    StringBuilder cycles = new StringBuilder();
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.StartsWith("BO_ "))
@@ -165,16 +181,14 @@ namespace DBCapi
                         else if (line.StartsWith(" SG_ "))
                         {
                             messages.Append(line);
+                        }                        
+                        else if (line.StartsWith("BA_ \"GenMsgCycleTime"))
+                        {
+                        cycles.Append(line);
                         }
-
-                        // TODO: Use for GetCycleTime(file,signal)
-                        //                        else if (line.StartsWith("BA_ \"GenMsgCycleTime\""))
-                        //                        {
-                        //                           messages.Append(line);
-                        //                       }
                     }
                     DbcMessages = messages.ToString();
-
+                    DbcCycles = cycles.ToString();
                 }
             }
         }
