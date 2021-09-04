@@ -1,4 +1,7 @@
+//Known issues: Malfunction when same signal used on different MSGs
+
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -13,6 +16,8 @@ namespace DBCapi
         public static string SIGorder = "";
         public static string SIGfactor = "";
         public static string SIGoffset = "";
+        public static string SIGvalue = "";
+        public static string SIGlength = "";
         public static string MSGcycle = "";
         public static string startBit = "";
         public static string endBit = "";
@@ -65,7 +70,7 @@ namespace DBCapi
             {
                 string DBCMessage = DBCmessageitems[i];
                 string MSGname = FindTextBetween(DBCMessage, " ", ":");
-                string MSGid = DBCMessage.Substring(0, 10);
+                string MSGid = FindTextBetween(DBCMessage, " ", " ");
 
                 Array.Resize(ref DBCmessageList, DBCmessageList.Length + 1);
                 DBCmessageList[DBCmessageList.Length - 1] = MSGname;
@@ -91,7 +96,7 @@ namespace DBCapi
             {
                 string DBCMessage = DBCmessageitems[i];
                 string MSGname = FindTextBetween(DBCMessage, " ", ":");
-                string MSGid = FindTextBetween(DBCMessage, " ", " "); ;
+                string MSGid = FindTextBetween(DBCMessage, " ", " ");
 
                 Array.Resize(ref MSGidList, MSGidList.Length + 1);
                 MSGidList[MSGidList.Length - 1] = MSGid;
@@ -192,6 +197,20 @@ namespace DBCapi
             return endBit;
         }
 
+        public string GetLength(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            startBit = GetStartBit(file, signal);
+            SIGorder = GetBitOrder(file, signal);
+            string SIGlength = FindTextBetween(DBCMessage, "|", "@");
+
+            return SIGlength;
+        }
+
         public string GetCycleTime(string file, string MSGid)
         {
 
@@ -216,6 +235,37 @@ namespace DBCapi
             return SIGorder;
         }
 
+        //Value
+
+        public string GetValue(string payload, string file, string signal)
+        {
+            string factor = GetFactor(file, signal);
+            string offset = GetOffset(file, signal);
+            string order = GetBitOrder(file, signal);
+            string start = GetStartBit(file, signal);
+            string end = GetEndBit(file, signal);
+            string length = GetLength(file, signal);
+            payload = Reverse(payload);
+
+            if (order == "Motorola")
+            {
+                string temp = start;
+                start = end;
+                end = temp;
+            }
+
+            string valueRawSTR = payload.Substring(Int32.Parse(start), Int32.Parse(length));
+
+            if (order == "Motorola") valueRawSTR = Reverse(valueRawSTR);
+            
+            double valueRawINT = Convert.ToDouble(Convert.ToInt32(valueRawSTR, 2));
+            double value = (valueRawINT) * double.Parse(factor, CultureInfo.InvariantCulture.NumberFormat);
+            value = value + Int32.Parse(offset);
+
+            return value.ToString();
+        }
+
+
         public void ClearLists()
         {
             DBCmessageList = new string[] { };
@@ -223,7 +273,15 @@ namespace DBCapi
             SIGlist = new string[] { };
         }
 
-        public string FindTextBetween(string text, string left, string right)
+        public static string Reverse(string s) //Theodor Zoulias
+        {
+            char[] charArray = s.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+        }
+
+
+        public string FindTextBetween(string text, string left, string right) //Yeldar Kurmangaliyev
         {
 
             int beginIndex = text.IndexOf(left); 
