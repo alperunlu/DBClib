@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 
-namespace DBClib
+namespace DBCapi
 {
     public class DBCclass
     {
         public String line;
+        public static string minVal = "";
+        public static string maxVal = "";
+        public static string SIGunit = "";
         public static string DbcPeriod = "";
         public static string DbcMessages = "";
         public static string DbcSignals = "";
@@ -17,7 +20,10 @@ namespace DBClib
         //Signals
         public string[] GetSignalNames(string file, string message)
         {
-            ClearLists();
+            DBCmessageList = new string[] { };
+            MSGidList = new string[] { };
+            SIGlist = new string[] { };
+
             DBCload(file);
 
             string[] MSGsignalitems = DbcMessages.Split(new string[] { "SG_ " }, StringSplitOptions.None);
@@ -29,7 +35,7 @@ namespace DBClib
 
                 Array.Resize(ref SIGlist, SIGlist.Length + 1);
                 SIGlist[SIGlist.Length - 1] = SIGname;
-
+                
             }
 
             return SIGlist;
@@ -39,7 +45,10 @@ namespace DBClib
         public string[] GetMessageNames(string file)
         {
 
-            ClearLists();
+            DBCmessageList = new string[] { };
+            MSGidList = new string[] { };
+            SIGlist = new string[] { };
+
             DBCload(file);
 
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
@@ -61,7 +70,10 @@ namespace DBClib
         public string[] GetMessageIDs(string file)
         {
 
-            ClearLists();
+            DBCmessageList = new string[] { };
+            MSGidList = new string[] { };
+            SIGlist = new string[] { };
+
             DBCload(file);
 
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "BO_ " }, StringSplitOptions.None);
@@ -76,7 +88,7 @@ namespace DBClib
                 MSGidList[MSGidList.Length - 1] = MSGid;
             }
 
-            return MSGidList;
+           return MSGidList;
         }
 
         public string GetMin(string file, string signal)
@@ -98,8 +110,20 @@ namespace DBClib
             DBCload(file);
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
             string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
-            string maxVal = FindTextBetween(DBCMessage, "[", "|");
+            string maxVal = FindTextBetween(DBCMessage, ") [", @"""");
+            maxVal = FindTextBetween(maxVal, "|", "]");
             return maxVal;
+        }
+
+        public string GetUnit(string file, string signal)
+        {
+
+            ClearLists();
+            DBCload(file);
+            string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
+            string sigUnit = FindTextBetween(DBCMessage, @"] """, @"""");
+            return sigUnit;
         }
 
         public void ClearLists()
@@ -109,19 +133,18 @@ namespace DBClib
             SIGlist = new string[] { };
         }
 
-
         public string FindTextBetween(string text, string left, string right)
         {
 
-            int beginIndex = text.IndexOf(left);
+            int beginIndex = text.IndexOf(left); 
             if (beginIndex == -1)
-                return string.Empty;
+                return string.Empty; 
 
             beginIndex += left.Length;
 
-            int endIndex = text.IndexOf(right, beginIndex);
+            int endIndex = text.IndexOf(right, beginIndex); 
             if (endIndex == -1)
-                return string.Empty;
+                return string.Empty; 
 
             return text.Substring(beginIndex, endIndex - beginIndex).Trim();
         }
@@ -129,10 +152,10 @@ namespace DBClib
         public void DBCload(string file)
         {
             if (file != null && file != "")
-            {
+            {                
                 using (StreamReader sr = new StreamReader(file))
                 {
-                    StringBuilder messages = new StringBuilder();
+                    StringBuilder messages = new StringBuilder();    
                     while ((line = sr.ReadLine()) != null)
                     {
                         if (line.StartsWith("BO_ "))
