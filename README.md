@@ -31,7 +31,7 @@ These functions are compatible with Standart CAN dbc and J1939 dbc files.
 
 # TODOlist
 
-#### 1. GetCycleTime and GetValue functions performation improvement
+#### 1. GetCycleTime and GetValue functions performance improvement
 
 According to unit test results, these functions must be reviewed.
 
