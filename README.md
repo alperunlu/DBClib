@@ -23,11 +23,11 @@ Add DBClib class into your solution. You may use all functions related DBC parsi
 
 These functions are compatible with Standart CAN dbc and J1939 dbc files.
 
-|                |Standart CAN DBC                        |J1939 DBC                        |
+|                |Standart CAN DBC               |J1939 DBC                    |
 |----------------|-------------------------------|-----------------------------|
-|Signal Functions|`Supported`            |Supported            |
-|Message Functions          |`Supported`            |Supported            |
-|GetValue()          |`Supported`|Supported
+|Signal Functions|Supported             |Supported            |
+|Message Functions|Supported            |Supported            |
+|GetValue()      |Supported             |Supported            |
 
 # TODOlist
 
