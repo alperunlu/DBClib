@@ -30,14 +30,12 @@ namespace DBCapi
         private string[] SIGlist = new string[] { };
 
         //Signals
-        public string[] GetSignalNames(string file, string message)
+        public string[] GetSignalNames(string file, string MSGid)
         {
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
-
+            
+            DbcMessages = FindTextBetween(DbcMessages, "BO_ "+message, "|");
             string[] MSGsignalitems = DbcMessages.Split(new string[] { "SG_ " }, StringSplitOptions.None);
 
             for (int i = 1; i < MSGsignalitems.Length; i++)
@@ -47,7 +45,7 @@ namespace DBCapi
 
                 Array.Resize(ref SIGlist, SIGlist.Length + 1);
                 SIGlist[SIGlist.Length - 1] = SIGname;
-                
+
             }
 
             return SIGlist;
@@ -57,10 +55,7 @@ namespace DBCapi
         public string[] GetMessageNames(string file)
         {
 
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
 
 
@@ -83,10 +78,7 @@ namespace DBCapi
         public string[] GetMessageIDs(string file)
         {
 
-            DBCmessageList = new string[] { };
-            MSGidList = new string[] { };
-            SIGlist = new string[] { };
-
+            ClearLists();
             DBCload(file);
             GetMessageNames(file);
 
@@ -102,7 +94,7 @@ namespace DBCapi
                 MSGidList[MSGidList.Length - 1] = MSGid;
             }
 
-           return MSGidList;
+            return MSGidList;
         }
 
         public string GetMin(string file, string signal)
@@ -111,7 +103,7 @@ namespace DBCapi
             ClearLists();
             DBCload(file);
             string[] DBCmessageitems = DbcMessages.Split(new string[] { "SG_ " + signal }, StringSplitOptions.None);
-            string DBCMessage = DBCmessageitems[DBCmessageitems.Length-1];    
+            string DBCMessage = DBCmessageitems[DBCmessageitems.Length - 1];
             string minVal = FindTextBetween(DBCMessage, "[", "|");
             return minVal;
         }
@@ -257,7 +249,7 @@ namespace DBCapi
             string valueRawSTR = payload.Substring(Int32.Parse(start), Int32.Parse(length));
 
             if (order == "Motorola") valueRawSTR = Reverse(valueRawSTR);
-            
+
             double valueRawINT = Convert.ToDouble(Convert.ToInt32(valueRawSTR, 2));
             double value = (valueRawINT) * double.Parse(factor, CultureInfo.InvariantCulture.NumberFormat);
             value = value + Int32.Parse(offset);
@@ -284,15 +276,15 @@ namespace DBCapi
         public string FindTextBetween(string text, string left, string right) //Yeldar Kurmangaliyev
         {
 
-            int beginIndex = text.IndexOf(left); 
+            int beginIndex = text.IndexOf(left);
             if (beginIndex == -1)
-                return string.Empty; 
+                return string.Empty;
 
             beginIndex += left.Length;
 
-            int endIndex = text.IndexOf(right, beginIndex); 
+            int endIndex = text.IndexOf(right, beginIndex);
             if (endIndex == -1)
-                return string.Empty; 
+                return string.Empty;
 
             return text.Substring(beginIndex, endIndex - beginIndex).Trim();
         }
@@ -300,7 +292,7 @@ namespace DBCapi
         public void DBCload(string file)
         {
             if (file != null && file != "")
-            {                
+            {
                 using (StreamReader sr = new StreamReader(file))
                 {
                     StringBuilder messages = new StringBuilder();
@@ -314,10 +306,10 @@ namespace DBCapi
                         else if (line.StartsWith(" SG_ "))
                         {
                             messages.Append(line);
-                        }                        
+                        }
                         else if (line.StartsWith("BA_ \"GenMsgCycleTime"))
                         {
-                        cycles.Append(line);
+                            cycles.Append(line);
                         }
                     }
                     DbcMessages = messages.ToString();
