@@ -7,7 +7,7 @@ CAN database file parsing class library for C#
 
 Add DBClib class into your solution. You may use all functions related DBC parsing as seen below.
 
-#### GetSignalNames(string file, string message)
+#### GetSignalNames(string file, string MSGid)
 #### GetMessageNames(string file)
 #### GetMessageIDs(string file)
 #### GetMin(string file, string signal)
