@@ -1,5 +1,3 @@
-//Known issues: Malfunction when same signal used on different MSGs
-
 using System;
 using System.Globalization;
 using System.IO;
